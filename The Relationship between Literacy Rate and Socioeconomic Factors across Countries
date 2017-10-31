@@ -1,0 +1,448 @@
+# Author: Carol Lin
+# Date: April 6th, 2017
+
+## load data
+
+## response variable: Adult literacy rate, population 15+ years, both sexes (%)
+#                     literacy rate (%)
+literacy <- read.table("lit.txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(literacy)
+dim(literacy) # 264  61
+
+
+## Identify tentative explanatory variables
+
+# 1. Inflation, consumer prices (annual %)
+inf <- read.table("Inflation, consumer prices (annual %).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(inf)
+dim(inf) # 264 61
+
+# 2. Gross savings (% of GDP)
+gsa <- read.table("Gross savings (% of GDP).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(gsa)
+dim(gsa) # 264 61
+
+# 3. Expenditure on education as % of total government expenditure (%)
+exp <- read.table("Expenditure on education as % of total government expenditure (%).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(exp)
+dim(exp) # 264 61
+
+# 4. Access to electricity (% of population)
+elec <- read.table("Access to eletricity (% of population).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(elec)
+dim(elec) # 264 61
+
+# 5. Population growth (annual %)
+pop <- read.table("Population growth (annual %).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(pop)
+dim(pop) # 264 61
+
+# 6. Internet users (per 100 people)
+inte <- read.table("Internet users (per 100 people).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(inte)
+dim(inte) # 264 61
+
+# 7. Unemployment, total (% of total labor force) (national estimate)
+unemp <- read.table("Unemployment, total (% of total labor force) (national estimate).txt", header=TRUE, sep="\t", quote="",stringsAsFactors=FALSE)
+head(unemp)
+dim(unemp) # 264 61
+
+# 8. Gross enrollment ratio, primary, both sexes (%)
+enrol <- read.table("Gross enrollment ratio, primary, both sexes (%).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(enrol)
+dim(enrol) # 264 61
+
+# 9. Charges for the use of intellectual property, payments (BoP, current US$)
+char <- read.table("Charges for the use of intellectual property, payments (BoP, current US$).txt", header=TRUE, sep="\t", quote="", stringsAsFactors=FALSE)
+head(char)
+dim(char) # 264 61
+
+# 10. Fertility rate, total (births per woman)
+fer <- read.table("Fertility rate, total (births per woman).txt", header=TRUE, sep="\t", stringsAsFactors=FALSE, quote="")
+head(fer)
+dim(fer) # 264 61
+
+
+
+## check if the country.Code columns match up
+inf$Country.Code==literacy$Country.Code # yes
+gsa$Country.Code==gsa$Country.Code # yes
+exp$Country.Code==exp$Country.Code # yes
+elec$Country.Code==elec$Country.Code # yes
+pop$Country.Code==pop$Country.Code # yes
+inte$Country.Code==inte$Country.Code # yes
+unemp$Country.Code==unemp$Country.Code # yes
+enrol$Country.Code==enrol$Country.Code # yes
+char$Country.Code==char$Country.Code # yes
+fer$Country.Code==fer$Country.Code # yes
+
+
+
+## get rid of irrelevant columns, create new data frame
+lit <- data.frame(literacy$Country.Code, literacy[,5:ncol(literacy)])
+head(lit)
+
+inf.2 <- data.frame(inf$Country.Code, inf[,5:ncol(inf)])
+head(inf.2)
+
+gsa.2 <- data.frame(gsa$Country.Code, gsa[,5:ncol(gsa)])
+head(gsa.2)
+
+exp.2 <- data.frame(exp$Country.Code, exp[,5:ncol(exp)])
+head(exp.2)
+
+elec.2 <- data.frame(elec$Country.Code, elec[,5:ncol(elec)])
+head(elec.2)
+
+pop.2 <- data.frame(pop$Country.Code, pop[,5:ncol(pop)])
+head(pop.2)
+
+inte.2 <- data.frame(inte$Country.Code, inte[,5:ncol(inte)])
+head(inte.2)
+
+unemp.2 <- data.frame(unemp$Country.Code, unemp[,5:ncol(unemp)])
+head(unemp.2)
+
+enrol.2 <- data.frame(enrol$Country.Code, enrol[,5:ncol(enrol)])
+head(enrol.2)
+
+char.2 <- data.frame(char$Country.Code, char[,5:ncol(char)])
+head(char.2)
+
+fer.2 <- data.frame(fer$Country.Code, fer[,5:ncol(fer)])
+head(fer.2)
+
+
+
+## create a new data frame, combining response and explanatory variables
+
+# pick the year with enough observations - 2010
+y1 <- data.frame(lit$literacy.Country.Code, lit$X2010, inf.2$X2010, gsa.2$X2010, exp.2$X2010, elec.2$X2010, pop.2$X2010,
+                 inte.2$X2010, unemp.2$X2010, enrol.2$X2010, char.2$X2010, fer.2$X2010)
+colnames(y1) <- c("ID", "lit", "inf", "gsa", "exp", "elec", "pop", "inte", "unemp", "enrol", "char", "fer")
+head(y1)
+dim(y1) # 264 12
+
+## construct a new data frame, remove NA
+
+# under lit (y) colume, find the colume index with NA value
+temp <- y1[complete.cases(y1$lit),]
+dim(y1[complete.cases(y1$lit),]) 
+
+dim(temp[complete.cases(temp$inf),]) 
+temp <- temp[complete.cases(temp$inf),]
+
+dim(temp[complete.cases(temp$gsa),])
+temp <- temp[complete.cases(temp$gsa),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$exp),])
+temp <- temp[complete.cases(temp$exp),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$elec),])
+temp <- temp[complete.cases(temp$elec),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$pop),])
+temp <- temp[complete.cases(temp$pop),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$inte),])
+temp <- temp[complete.cases(temp$inte),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$unemp),])
+temp <- temp[complete.cases(temp$unemp),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$enrol),])
+temp <- temp[complete.cases(temp$enrol),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$char),])
+temp <- temp[complete.cases(temp$char),]
+dim(temp) 
+
+dim(temp[complete.cases(temp$fer),])
+temp <- temp[complete.cases(temp$fer),]
+dim(temp) 
+
+# final data set to be used
+y <- temp
+dim(y) # 34 12
+head(y)
+
+## country match
+country <- data.frame(literacy[,1:2])
+country.select<- rep(NA, times=nrow(y))
+for(i in 1:nrow(y)){
+  country.select[i] <- country$Country.Name[which(country$Country.Code == y$ID[i])]
+} # end for loop
+country$Country.Name[which(country$Country.Code == y$ID[1])]
+country$Country.Code[i] == y$ID[i]
+
+
+## summary statistics
+summary(y[2:ncol(y)])
+
+## Distributions - Histograms
+par(mfrow=c(2,3), mar=c(5, 5, 4, 2)+0.1)
+hist(y$lit, las=TRUE, main="Histogram for Adult \n Literacy Rate(%)",
+     col="cadetblue", xlab="Literacy Rate (%)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$inf, las=TRUE, main="Inflation (Annual %)",
+     col="cadetblue", xlab= "Inflation (%)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$gsa, las=TRUE, main="Gross savings (% of GDP)",
+     col="cadetblue", xlab= "Gross savings (% of GDP)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$exp, las=TRUE, main="Expenditure on education as % of \n total government expenditure (%)",
+     col="cadetblue", xlab= "Expenditure on edu (%)", cex.lab=1, cex.axis=1, cex.main=1)
+hist(y$elec, las=TRUE, main="Access to eletricity \n (% of population)",
+     col="cadetblue", xlab= "Access to eletricity (%)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$pop, las=TRUE, main="Population growth (annual %)",
+    col="cadetblue", xlab= "Population growth (%)", cex.lab=1, cex.axis=1, cex.main=1.1)
+dev.off()
+
+par(mfrow=c(2,3), mar=c(5, 5, 4, 2)+0.1)
+hist(y$pop, las=TRUE, main="Internet users \n (per 100 people)",
+     col="cadetblue", xlab= "Internet users", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$unemp, las=TRUE, main="Unemployment, total \n (% of total labor force)",
+     col="cadetblue", xlab= "Unemployment (%)", cex.lab=1, cex.axis=1, cex.main=1)
+hist(y$enrol, las=TRUE, main="Gross enrollment ratio, \n primary, both sexes (%)",
+     col="cadetblue", xlab= "Gross enrollment ratio (%)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$char, las=TRUE, main="Charges for the use of \n intellectual property (US$)",
+     col="cadetblue", xlab= "Charges of intellectual \n property (US$)", cex.lab=1, cex.axis=1, cex.main=1.1)
+hist(y$fer, las=TRUE, main="Fertility rate, total (births per woman)",
+     col="cadetblue", xlab= "Fertility rate", cex.lab=1, cex.axis=1, cex.main=1.1)
+
+## correlation matrix
+round(cor(y[,2:ncol(y)]), digits=3)
+
+## scatterplot
+par(mar=c(5, 5, 4, 2)+0.1)
+pairs(y[,2:ncol(y)], col="darkolivegreen4")
+# dev.off()
+
+## check individual partern: y vs. x_i
+pairs(y[,c("lit", "inf")])
+pairs(y[,c("lit", "gsa")]) 
+pairs(y[,c("lit", "exp")]) # delete cor=0.007147112
+pairs(y[,c("lit", "elec")])
+pairs(y[,c("lit", "pop")]) # take square
+pairs(y[,c("lit", "inte")]) # take log
+pairs(y[,c("lit", "unemp")]) # delete cor=0.1535941
+pairs(y[,c("lit", "enrol")]) 
+pairs(y[,c("lit", "char")]) # delete cor=0.1720128
+pairs(y[,c("lit", "fer")]) 
+# dev.off()
+
+## Transformation
+y.2 <- y
+y.2$pop <- (y$pop)^2
+y.2$inte <- log(y$inte)
+# delete unneeded columns: char, unemp, exp
+y.2$char <- NULL
+y.2$unemp <- NULL
+y.2$exp <- NULL
+head(y.2)
+dim(y.2) # 34 9
+
+## updated scatterplots
+par(mfrow=c(1,2), mar=c(5, 5, 4, 2)+0.1)
+# pairs(y[,2:ncol(y.2)]
+plot(y.2$inte, y.2$lit, xlab="inte", ylab="lit", main="Scatterplot After\n Transformation", cex.main=0.7)
+plot(y.2$pop, y.2$lit, xlab="pop", ylab="lit", main="Scatterplot After\n Transformation", cex.main=0.7)
+# dev.off()
+cor(y.2[,c("lit", "inte")]) # 0.8958485
+cor(y.2[,c("lit", "pop")]) #-0.8429469
+cor(y[,c("lit", "inte")]) # 0.7155281
+cor(y[,c("lit", "pop")]) # -0.7713908
+
+## linear model after transformation
+lm.ya <- lm(lit ~ inf + gsa + elec +pop +inte +enrol + fer, data=y.2)
+summary(lm.ya)
+
+## check multicollinearity - compute VIF
+library(usdm)
+vif(y.2[, c("inf", "gsa", "elec", "pop", "inte", "enrol", "fer")])
+
+# pop vs. fer (new correlation)
+cor(y.2[,c("lit", "pop")]) # -0.8429469 -> delete pop
+cor(y.2[,c("lit", "fer")]) # -0.8881938
+cor(y.2[,c("pop", "fer")]) # 0.9737674
+
+## construct new data frame -> y.3
+y.3 <- y.2
+y.3$pop <- NULL
+dim(y.3) 
+
+lm.yb <- lm(lit ~ inf + gsa + elec +inte +enrol + fer, data=y.3)
+summary(lm.yb)
+
+## check multicollinearity - compute VIF
+library(usdm)
+vif(y.3[, c("inf", "gsa",  "elec", "inte", "enrol", "fer")])
+
+# elec vs. inte
+cor(y.3[,c("lit", "elec")]) # 0.884019 <- remove elec
+cor(y.3[,c("lit", "inte")]) # 0.8958485
+cor(y.3[,c("inte", "elec")]) # 0.9056947
+
+## construct new data frame -> y.4
+y.4 <- y.3
+y.4$elec <- NULL
+dim(y.4) # 34  7
+
+lm.yc <- lm(lit ~ inf + gsa + inte +enrol + fer, data=y.4)
+summary(lm.yc)
+
+vif(y.4[, c("inf", "gsa", "inte", "enrol", "fer")])
+
+# inte vs. fer
+cor(y.4[,c("lit", "inte")]) # 0.8958485
+cor(y.4[,c("lit", "fer")]) # -0.8881938 -> remove fer
+cor(y.4[,c("inte", "fer")]) # -0.8767722
+
+y.5 <- y.4
+y.5$fer <- NULL
+dim(y.5) # 34  6
+vif(y.5[, c("inf", "gsa", "inte", "enrol")])
+
+lm.yd <- lm(lit ~ inf + gsa + inte +enrol, data=y.5)
+summary(lm.yd)
+cor(y.5[,2:ncol(y.5)])
+pairs(y.5[,2:ncol(y.5)])
+
+
+## stepwise regression
+installed.packages('leaps')
+library(leaps)
+forward.step <- regsubsets(lit ~ inf + gsa + inte + enrol, 
+                           data=y.5, method="forward") 
+summary(forward.step)
+# order added (first-> last): inte -> enrol -> gsa -> inf
+
+# compare C_p values
+round(summary(forward.step)$cp, digits=1)    # 9.5 1.1 3.0 5.0
+round(summary(forward.step)$adjr2, digits=1) # 0.8 0.8 0.8 0.8
+
+## c_p: keep between 2-3 variables
+# 1. keep 2 variables
+y.6 <- y.5
+y.6$inf <- NULL
+y.6$gsa <- NULL
+dim(y.6) # 34  4 -> this is the FINAL DATA SET
+
+## final model
+lm.ye <- lm(lit ~ inte + enrol, data=y.6) # this is the FINAL MODEL
+summary(lm.ye)
+
+# 2. keep 3 variables
+y.7 <- y.5
+y.7$inf <- NULL
+dim(y.7) # 34  5
+
+lm.yf <- lm(lit ~ gsa + inte +enrol, data=y.7)
+summary(lm.yf) # the slope of gsa is insignificant
+
+# partial F-test
+anova(lm.ye, lm.yf) # p-value = 0.8089 -> accept Ho -> can remove 
+
+
+## residual analysis
+
+# normal quantile plot
+par(mfrow=c(2,2), mar=c(5, 5, 4, 2)+1.2)
+qqnorm(lm.ye$residuals, las=TRUE, col="black", pch=19, cex.axis=0.6, 
+       cex.lab=0.6, cex.main=0.7)
+qqline(lm.ye$residuals)
+# dev.off()
+
+# residuals vs. fitted values plot
+ylim.vector <- range(c(lm.ye$residuals, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma))
+plot(lm.ye$fitted.values, lm.ye$residuals, las=TRUE, pch=19, col="darkolivegreen4", 
+     main="Residuals vs. Fitted Values", xlab="fitted values", ylab="residuals",
+     ylim=ylim.vector, cex.axis=1.1, cex.lab=1.1, cex.main=1.3)
+abline(h=c(0, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma), lty=2, 
+       col=c("gray50", "darkolivegreen4", "darkolivegreen4"), lwd=2)
+#dev.off()
+
+# RMSE
+summary(lm.ye)$sigma # 7.068396
+
+
+
+
+## leverage points
+color.vector <- rep("darkolivegreen4", times=nrow(y.6))
+color.vector[hatvalues(lm.ye) > (2*length(coef(lm.ye)))/nrow(y.6)] <- "red"
+
+# residuals vs. fitted values
+ylim.vector <- range(c(lm.ye$residuals, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma))
+plot(lm.ye$fitted.values, lm.ye$residuals, las=TRUE, pch=19, col=color.vector, 
+     main=expression("Residuals vs. Fitted Values"), xlab="fitted values", ylab="residuals",
+     ylim=ylim.vector, cex.axis=0.6, cex.lab=0.6, cex.main=0.7)
+abline(h=c(0, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma), lty=2, 
+       col=c("gray50", "darkolivegreen4", "darkolivegreen4"), lwd=2)
+
+# residuals vs. inte
+plot(y.6$inte, lm.ye$residuals, las=TRUE, pch=19, col=color.vector, 
+     main=expression("Residuals vs. Internet Users"), xlab="Internet Users per 100 People", 
+     ylab="residuals", ylim=ylim.vector, cex.axis=0.6, cex.lab=0.6, cex.main=0.7)
+abline(h=0, lty=2, col="gray50", lwd=2)
+
+# residuals vs. enrol
+plot(y.6$enrol, lm.ye$residuals, las=TRUE, pch=19, col=color.vector, 
+     main=expression("Residuals vs. Enrollment Rate"), xlab="Gross School Enrollment Ratio (%)", 
+     ylab="residuals", ylim=ylim.vector, cex.axis=0.6, cex.lab=0.6, cex.main=0.7)
+abline(h=0, lty=2, col="gray50", lwd=2)
+# dev.off()
+
+
+
+# which points have high leverage 
+require(usdm)
+which(as.vector(hatvalues(lm.ye)) > (2*length(coef(lm.ye)))/nrow(y.6)) # obs number 11 20 21
+
+
+
+
+## identify which observations are influential using Cook's distance method
+
+# if leverage value is high, plot point in RED instead of green
+color.vector2 <- rep("darkolivegreen4", times=nrow(y.6))
+color.vector2[cooks.distance(lm.ye) > qf(p=0.5, df1=length(coef(lm.ye)), 
+                                         df2=nrow(y.6)-length(coef(lm.ye)))] <- "red"
+par(mfrow=c(1,3), mar=c(5, 5, 4, 2))
+# residuals vs. fitted values
+ylim.vector2 <- range(c(lm.ye$residuals, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma))
+
+plot(lm.ye$fitted.values, lm.ye$residuals, las=TRUE, pch=19, col=color.vector2, 
+     main=expression("Residuals vs. Fitted Values"), xlab="fitted values", ylab="residuals",
+     ylim=ylim.vector2, cex.axis=1.1, cex.lab=1.1, cex.main=1.2)
+abline(h=c(0, 3*summary(lm.ye)$sigma, -3*summary(lm.ye)$sigma), lty=2, 
+       col=c("gray50", "darkolivegreen4", "darkolivegreen4"), lwd=2)
+
+# residuals vs. inte
+plot(y.6$inte, lm.ye$residuals, las=TRUE, pch=19, col=color.vector2, 
+     main=expression("Residuals vs. Internet Users"), xlab="Internet Users per 100 People", 
+     ylab="residuals", ylim=ylim.vector2, cex.axis=1.1, cex.lab=1.1, cex.main=1.2)
+abline(h=0, lty=2, col="gray50", lwd=2)
+
+# residuals vs. enrol
+plot(y.6$enrol, lm.ye$residuals, las=TRUE, pch=19, col=color.vector2, 
+     main=expression("Residuals vs. School Enrollment"), xlab="Gross School Enrollment Ratio (%)", 
+     ylab="residuals", ylim=ylim.vector2, cex.axis=1.1, cex.lab=1.1, cex.main=1.2)
+abline(h=0, lty=2, col="gray50", lwd=2)
+# dev.off()
+
+
+## extrapolation/ interpolation 
+range(y.6$inte) #0.000000 4.066462
+range(y.6$enrol) #83.02407 125.69669
+
+## Durbin-Watson test
+require(lmtest)
+dwtest(lm.ye, alternative="greater") #p-value = 0.7135
+
+
+
